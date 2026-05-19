@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 
 function buildKeyMatrix(key: string): number[][] {
   const letters = key.toUpperCase().replace(/[^A-Z]/g, "");

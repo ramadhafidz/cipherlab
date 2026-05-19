@@ -1,7 +1,10 @@
 /**
- * Halaman About — penjelasan singkat tentang kriptografi klasik
- * dan metode yang tersedia di CipherLab.
+ * Halaman About — penjelasan singkat tentang CipherLab
+ * dan cara menggunakan aplikasi ini.
  */
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 interface CipherCard {
   name: string;
@@ -93,83 +96,65 @@ export function About() {
             lineHeight: "var(--leading-tight)",
           }}
         >
-          Tentang{" "}
-          <span style={{ color: "var(--text-accent)" }}>Kriptografi Klasik</span>
+          Tentang <span style={{ color: "var(--text-accent)" }}>CipherLab</span>
         </h1>
         <p style={{ ...bodyStyle, fontSize: "var(--text-lg)" }}>
-          Kriptografi klasik adalah seni menyandikan pesan yang berkembang jauh sebelum era
-          komputer. Metode-metode ini menjadi fondasi ilmu kriptografi modern.
+          CipherLab adalah playground edukatif untuk bereksperimen dengan cipher-cipher klasik.
+          Semua proses berjalan di browser (client-side) sehingga Anda dapat mencoba enkripsi
+          dan dekripsi secara langsung tanpa perlu backend.
         </p>
       </div>
 
       <div style={{ height: "1px", background: "var(--border)" }} />
 
-      {/* Apa itu Kriptografi */}
+      {/* Apa itu CipherLab */}
       <section>
-        <h2 style={sectionTitleStyle}>Apa Itu Kriptografi?</h2>
+        <h2 style={sectionTitleStyle}>Apa Itu CipherLab?</h2>
         <p style={bodyStyle}>
-          Kriptografi (dari bahasa Yunani <em>kryptos</em> = tersembunyi, <em>graphein</em> =
-          menulis) adalah ilmu dan seni mengamankan komunikasi dengan mengubah pesan asli
-          (plaintext) menjadi format yang tidak dapat dibaca (ciphertext), dan sebaliknya.
-          Tujuan utamanya adalah menjaga kerahasiaan, integritas, dan keaslian informasi.
+          CipherLab dirancang sebagai alat pembelajaran interaktif untuk memahami prinsip dasar
+          kriptografi klasik melalui contoh langsung. Pengguna dapat memilih metode, mengisi
+          parameter (mis. kunci atau shift), lalu melihat hasil enkripsi/dekripsi secara real-time.
         </p>
       </section>
 
-      {/* Jenis Cipher */}
+      {/* Cara Menggunakan */}
       <section>
-        <h2 style={sectionTitleStyle}>Jenis Cipher Klasik</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <h2 style={sectionTitleStyle}>Cara Menggunakan</h2>
+        <ul
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-4)",
+            margin: 0,
+            paddingLeft: 0,
+            listStyle: "none",
+          }}
+        >
           {[
-            {
-              type: "Substitusi",
-              desc: "Setiap karakter dalam plaintext diganti dengan karakter lain berdasarkan aturan tertentu. Dibagi menjadi monoalfabetik (satu-satu) dan polialfabetik (banyak kemungkinan per karakter).",
-              examples: "Caesar, Atbash, ROT13, Vigenère, Playfair",
-            },
-            {
-              type: "Transposisi",
-              desc: "Karakter plaintext tidak diubah, tetapi urutan atau posisinya diacak sesuai pola tertentu. Tanpa mengubah huruf itu sendiri.",
-              examples: "Rail Fence, Columnar Transposition",
-            },
-          ].map((item) => (
-            <div
-              key={item.type}
-              style={{
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-base)",
-                padding: "var(--space-5)",
-              }}
+            "Pilih cipher dari daftar di halaman utama.",
+            "Isi parameter yang diperlukan pada form (mis. shift, key).",
+            "Pilih mode: Enkripsi atau Dekripsi.",
+            "Ketik teks pada area input dan lihat hasil di output secara real-time.",
+            "Gunakan tombol Salin untuk menyalin hasil ke clipboard.",
+          ].map((step, idx) => (
+            <li
+              key={idx}
+              style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "var(--space-2) 0" }}
             >
-              <h3
-                style={{
-                  fontFamily: "Rajdhani, sans-serif",
-                  fontWeight: 700,
-                  fontSize: "var(--text-lg)",
-                  color: "var(--text-primary)",
-                  margin: "0 0 var(--space-2) 0",
-                }}
-              >
-                {item.type}
-              </h3>
-              <p style={{ ...bodyStyle, marginBottom: "var(--space-3)" }}>{item.desc}</p>
-              <p
-                style={{
-                  fontFamily: "'Share Tech Mono', monospace",
-                  fontSize: "var(--text-xs)",
-                  color: "var(--text-accent)",
-                  margin: 0,
-                }}
-              >
-                Contoh: {item.examples}
-              </p>
-            </div>
+              <FontAwesomeIcon
+                icon={faCaretRight}
+                aria-hidden={true}
+                style={{ color: "var(--text-accent)", fontSize: "1rem", lineHeight: 1 }}
+              />
+              <p style={{ ...bodyStyle, margin: 0 }}>{step}</p>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       {/* Cipher cards */}
       <section>
-        <h2 style={sectionTitleStyle}>Cipher di CipherLab</h2>
+        <h2 style={sectionTitleStyle}>Cipher yang Tersedia di CipherLab</h2>
         <div
           style={{
             display: "grid",
