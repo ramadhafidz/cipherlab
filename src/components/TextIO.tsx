@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { CSSProperties } from "react";
 import type { CipherMode } from "../hooks/useCipher";
 
@@ -35,6 +35,7 @@ export function TextIO({
   onChangeCipher,
 }: TextIOProps) {
   const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Salin output ke clipboard
   const handleCopy = async () => {
@@ -48,17 +49,34 @@ export function TextIO({
     }
   };
 
-    // Download hasil sebagai file .txt
-    const handleDownload = () => {
-      if (!outputText) return;
-      const element = document.createElement("a");
-      const file = new Blob([outputText], { type: "text/plain" });
-      element.href = URL.createObjectURL(file);
-      element.download = `cipherlab-result-${Date.now()}.txt`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+  // Download hasil sebagai file .txt
+  const handleDownload = () => {
+    if (!outputText) return;
+    const element = document.createElement("a");
+    const file = new Blob([outputText], { type: "text/plain" });
+    element.href = URL.createObjectURL(file);
+    element.download = `cipherlab-result-${Date.now()}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  // Impor teks dari file .txt
+  const handleImportText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result;
+      if (typeof text === "string") {
+        onInputChange(text);
+      }
     };
+    reader.readAsText(file);
+    // Reset nilai input agar bisa mengunggah file yang sama lagi jika perlu
+    event.target.value = "";
+  };
 
   const textareaStyle: CSSProperties = {
     width: "100%",
@@ -102,8 +120,41 @@ export function TextIO({
         className="text-io-grid"
       >
         {/* Textarea input (plaintext atau ciphertext) */}
-        <div>
-          <label style={labelStyle}>{inputLabel}</label>
+        <div style={{ position: "relative" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-2)" }}>
+            <label style={{ ...labelStyle, marginBottom: 0 }}>{inputLabel}</label>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--accent)",
+                fontSize: "var(--text-xs)",
+                fontFamily: "Rajdhani, sans-serif",
+                textTransform: "uppercase",
+                letterSpacing: "var(--tracking-wider)",
+                cursor: "pointer",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-sm)",
+                transition: "background 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--accent-glow)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              [↑ Impor File]
+            </button>
+            <input
+              type="file"
+              accept=".txt"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleImportText}
+            />
+          </div>
           <textarea
             value={inputText}
             onChange={(e) => onInputChange(e.target.value)}
@@ -112,7 +163,7 @@ export function TextIO({
             onFocus={(e) => {
               e.currentTarget.style.borderColor = "var(--border-active)";
               e.currentTarget.style.boxShadow =
-                "0 0 0 2px var(--accent-glow)";
+                "0 0 0 2px var(--accent-glow), inset 0 0 10px rgba(58, 213, 123, 0.05)";
             }}
             onBlur={(e) => {
               e.currentTarget.style.borderColor = "var(--border)";
@@ -123,7 +174,7 @@ export function TextIO({
 
         {/* Textarea output (read-only) */}
         <div>
-          <label style={labelStyle}>{outputLabel}</label>
+          <label style={{ ...labelStyle, height: "18px" }}>{outputLabel}</label>
           <textarea
             readOnly
             value={outputText}
@@ -135,8 +186,9 @@ export function TextIO({
                 : "var(--bg-surface)",
               color: outputText ? "var(--text-accent)" : "var(--text-muted)",
               boxShadow: outputText
-                ? "0 0 20px var(--accent-glow), inset 0 0 10px rgba(240,165,0,0.05)"
+                ? "0 0 20px var(--accent-glow), inset 0 0 10px rgba(58, 213, 123, 0.1)"
                 : "none",
+              borderColor: outputText ? "var(--accent-dim)" : "var(--border)",
               cursor: "default",
             }}
           />
@@ -153,7 +205,7 @@ export function TextIO({
             fontFamily: "Rajdhani, sans-serif",
           }}
         >
-          ⚠ {error}
+          <span style={{ color: "var(--error)", fontWeight: "bold" }}>[ERROR]</span> {error}
         </p>
       )}
 
@@ -173,24 +225,29 @@ export function TextIO({
             padding: "var(--space-3) var(--space-6)",
             background: "var(--accent)",
             color: "var(--bg-base)",
-            border: "none",
+            border: "1px solid var(--accent)",
             borderRadius: "var(--radius-base)",
             fontFamily: "Rajdhani, sans-serif",
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: "var(--text-base)",
             letterSpacing: "var(--tracking-wide)",
             textTransform: "uppercase",
             cursor: "pointer",
-            transition: "filter 0.15s ease",
+            transition: "all 0.15s ease",
+            boxShadow: "0 0 10px var(--accent-glow)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.filter = "brightness(1.1)";
+            e.currentTarget.style.background = "#fff";
+            e.currentTarget.style.color = "var(--bg-base)";
+            e.currentTarget.style.boxShadow = "0 0 15px var(--accent-glow-strong)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.filter = "brightness(1)";
+            e.currentTarget.style.background = "var(--accent)";
+            e.currentTarget.style.color = "var(--bg-base)";
+            e.currentTarget.style.boxShadow = "0 0 10px var(--accent-glow)";
           }}
         >
-          {mode === "encrypt" ? "Enkripsi" : "Dekripsi"}
+          {mode === "encrypt" ? "▶ Enkripsi" : "▶ Dekripsi"}
         </button>
 
         {/* Toggle live preview */}
@@ -210,11 +267,12 @@ export function TextIO({
             letterSpacing: "var(--tracking-wide)",
             textTransform: "uppercase",
             cursor: "pointer",
-            transition: "background 0.15s ease, color 0.15s ease, border-color 0.15s ease",
+            transition: "background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease",
+            boxShadow: livePreviewEnabled ? "inset 0 0 10px var(--accent-glow)" : "none",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = livePreviewEnabled
-              ? "rgba(58,213,123,0.2)"
+              ? "rgba(58,213,123,0.25)"
               : "var(--accent-glow)";
           }}
           onMouseLeave={(e) => {
@@ -254,7 +312,7 @@ export function TextIO({
             e.currentTarget.style.background = "transparent";
           }}
         >
-          {copied ? "✓ Tersalin!" : "Salin Hasil"}
+          {copied ? "[✓] Tersalin" : "[C] Salin"}
         </button>
 
         {/* Tombol Swap — tukar input ↔ output dan balik mode */}
@@ -264,9 +322,9 @@ export function TextIO({
           style={{
             padding: "var(--space-3) var(--space-5)",
             background: "transparent",
-            color: outputText ? "var(--accent)" : "var(--text-muted)",
+            color: outputText ? "var(--text-primary)" : "var(--text-muted)",
             border: outputText
-              ? "1px solid var(--accent-dim)"
+              ? "1px solid var(--text-muted)"
               : "1px solid var(--border)",
             borderRadius: "var(--radius-base)",
             fontFamily: "Rajdhani, sans-serif",
@@ -279,78 +337,77 @@ export function TextIO({
           }}
           onMouseEnter={(e) => {
             if (outputText)
-              e.currentTarget.style.background = "var(--accent-glow)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "transparent";
           }}
         >
-          ⇄ Balik
+          [⇄] Balik
         </button>
 
-          {/* Tombol Download Hasil */}
+        {/* Tombol Download Hasil */}
+        <button
+          onClick={handleDownload}
+          disabled={!outputText}
+          style={{
+            padding: "var(--space-3) var(--space-5)",
+            background: "transparent",
+            color: outputText ? "var(--text-primary)" : "var(--text-muted)",
+            border: outputText
+              ? "1px solid var(--text-muted)"
+              : "1px solid var(--border)",
+            borderRadius: "var(--radius-base)",
+            fontFamily: "Rajdhani, sans-serif",
+            fontWeight: 600,
+            fontSize: "var(--text-base)",
+            letterSpacing: "var(--tracking-wide)",
+            textTransform: "uppercase",
+            cursor: outputText ? "pointer" : "not-allowed",
+            transition: "background 0.15s ease",
+          }}
+          onMouseEnter={(e) => {
+            if (outputText)
+              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
+        >
+          [↓] Ekspor
+        </button>
+
+        {/* Tombol Ubah Metode — kembali ke selector cipher */}
+        {onChangeCipher && (
           <button
-            onClick={handleDownload}
-            disabled={!outputText}
+            onClick={onChangeCipher}
             style={{
               padding: "var(--space-3) var(--space-5)",
               background: "transparent",
-              color: outputText ? "var(--accent)" : "var(--text-muted)",
-              border: outputText
-                ? "1px solid var(--accent-dim)"
-                : "1px solid var(--border)",
+              color: "var(--warning)",
+              border: "1px solid var(--border)",
               borderRadius: "var(--radius-base)",
               fontFamily: "Rajdhani, sans-serif",
               fontWeight: 600,
               fontSize: "var(--text-base)",
               letterSpacing: "var(--tracking-wide)",
               textTransform: "uppercase",
-              cursor: outputText ? "pointer" : "not-allowed",
-              transition: "background 0.15s ease",
+              cursor: "pointer",
+              transition: "background 0.15s ease, color 0.15s ease, border-color 0.15s ease",
+              marginLeft: "auto",
             }}
             onMouseEnter={(e) => {
-              if (outputText)
-                e.currentTarget.style.background = "var(--accent-glow)";
+              e.currentTarget.style.borderColor = "var(--warning)";
+              e.currentTarget.style.background = "rgba(224, 168, 74, 0.1)";
             }}
             onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "var(--border)";
               e.currentTarget.style.background = "transparent";
             }}
           >
-            ⬇ Download
+            [⟳] Ubah Metode
           </button>
-
-          {/* Tombol Ubah Metode — kembali ke selector cipher */}
-          {onChangeCipher && (
-            <button
-              onClick={onChangeCipher}
-              style={{
-                padding: "var(--space-3) var(--space-5)",
-                background: "transparent",
-                color: "var(--text-secondary)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-base)",
-                fontFamily: "Rajdhani, sans-serif",
-                fontWeight: 600,
-                fontSize: "var(--text-base)",
-                letterSpacing: "var(--tracking-wide)",
-                textTransform: "uppercase",
-                cursor: "pointer",
-                transition: "background 0.15s ease, color 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "var(--accent)";
-                e.currentTarget.style.borderColor = "var(--accent-dim)";
-                e.currentTarget.style.background = "var(--accent-glow)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "var(--text-secondary)";
-                e.currentTarget.style.borderColor = "var(--border)";
-                e.currentTarget.style.background = "transparent";
-              }}
-            >
-              ⟳ Ubah Metode
-            </button>
-          )}
+        )}
 
         {/* Tombol Reset — bersihkan semua teks dan parameter */}
         <button
@@ -359,7 +416,7 @@ export function TextIO({
             padding: "var(--space-3) var(--space-5)",
             background: "transparent",
             color: "var(--error)",
-            border: "1px solid var(--error)",
+            border: "1px dashed var(--error)",
             borderRadius: "var(--radius-base)",
             fontFamily: "Rajdhani, sans-serif",
             fontWeight: 600,
@@ -369,17 +426,20 @@ export function TextIO({
             cursor: "pointer",
             transition: "background 0.15s ease, opacity 0.15s ease",
             opacity: 0.7,
+            marginLeft: onChangeCipher ? "0" : "auto",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.opacity = "1";
-            e.currentTarget.style.background = "rgba(224,92,92,0.1)";
+            e.currentTarget.style.background = "rgba(255, 51, 51, 0.1)";
+            e.currentTarget.style.borderStyle = "solid";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.opacity = "0.7";
             e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.borderStyle = "dashed";
           }}
         >
-          Reset
+          [X] Reset
         </button>
       </div>
     </div>

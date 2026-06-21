@@ -19,6 +19,7 @@
   --accent:        #3ad57b;
   --accent-dim:    #1f7a47;
   --accent-glow:   rgba(58, 213, 123, 0.16);
+  --accent-glow-strong: rgba(58, 213, 123, 0.4);
 
   /* Text */
   --text-primary:  #d6ffe8;
@@ -28,7 +29,7 @@
 
   /* Semantic */
   --success:       #4caf7d;
-  --error:         #e05c5c;
+  --error:         #ff3333;
   --warning:       #e0a84a;
 
   /* Border */
@@ -37,7 +38,7 @@
   --border-subtle: #15271f;
 
   /* Misc */
-  --scanline-opacity: 0.03;
+  --scanline-opacity: 0.04;
 
   /* Type Scale */
   --text-xs:   0.75rem;
@@ -105,6 +106,7 @@ body {
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  animation: crt-flicker 0.15s infinite;
 }
 
 /* Efek grid + scanline untuk nuansa terminal */
@@ -155,36 +157,52 @@ body::before {
    SCROLLBAR STYLING (webkit)
    ============================================ */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--bg-base);
+  border-left: 1px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 3px;
+  border: 1px solid var(--bg-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-dim);
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
 }
 
 /* ============================================
    SELECTION
    ============================================ */
 ::selection {
-  background: var(--accent-glow);
-  color: var(--text-accent);
+  background: var(--accent);
+  color: var(--bg-base);
+  text-shadow: none;
 }
 
 .terminal-shell {
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-base);
   background: linear-gradient(180deg, rgba(10, 24, 17, 0.95), rgba(8, 18, 13, 0.95));
-  box-shadow: 0 0 0 1px rgba(58, 213, 123, 0.06), 0 18px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 1px rgba(58, 213, 123, 0.06), 0 18px 40px rgba(0, 0, 0, 0.35), inset 0 0 20px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal-shell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
 }
 
 .terminal-header {
@@ -194,17 +212,41 @@ body::before {
   gap: var(--space-4);
   padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .terminal-dots {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .terminal-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--text-muted);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.terminal-dot:nth-child(1) { background: var(--error); }
+.terminal-dot:nth-child(2) { background: var(--warning); }
+.terminal-dot:nth-child(3) { background: var(--success); }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes crt-flicker {
+  0% { opacity: 0.98; }
+  50% { opacity: 1; }
+  100% { opacity: 0.99; }
+}
+
+@keyframes text-glow {
+  0% { text-shadow: 0 0 5px var(--accent-glow); }
+  50% { text-shadow: 0 0 15px var(--accent-glow-strong), 0 0 5px var(--accent); }
+  100% { text-shadow: 0 0 5px var(--accent-glow); }
+}
+
+.glow-text {
+  animation: text-glow 2s infinite alternate;
 }

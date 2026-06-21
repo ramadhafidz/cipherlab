@@ -100,6 +100,7 @@ export function Home() {
         </div>
         <div style={{ padding: "var(--space-6)" }}>
           <h1
+            className="glow-text"
             style={{
               fontFamily: "Rajdhani, sans-serif",
               fontWeight: 700,
