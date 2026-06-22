@@ -110,6 +110,52 @@ export function TextIO({
 
   return (
     <div>
+        {/* Bagian Atas: Tombol Upload/Impor */}
+      <div style={{ marginBottom: "var(--space-4)", display: "flex", justifyContent: "flex-start" }}>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          style={{
+            padding: "var(--space-3) var(--space-5)",
+            background: "var(--accent-glow)",
+            color: "var(--text-primary)",
+            border: "1px dashed var(--accent)",
+            borderRadius: "var(--radius-base)",
+            fontFamily: "Rajdhani, sans-serif",
+            fontWeight: 600,
+            fontSize: "var(--text-base)",
+            letterSpacing: "var(--tracking-wide)",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            transition: "all 0.15s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "var(--space-2)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(58, 213, 123, 0.25)";
+            e.currentTarget.style.borderStyle = "solid";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "var(--accent-glow)";
+            e.currentTarget.style.borderStyle = "dashed";
+          }}
+        >
+          <span>[↑] Impor File Teks (.txt)</span>
+        </button>
+        <input
+          type="file"
+          accept=".txt"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onClick={(e) => {
+            // Reset value so selecting the same file works
+            (e.target as HTMLInputElement).value = "";
+          }}
+          onChange={handleImportText}
+        />
+      </div>
+
       {/* Area dua textarea berdampingan */}
       <div
         style={{
@@ -123,37 +169,6 @@ export function TextIO({
         <div style={{ position: "relative" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-2)" }}>
             <label style={{ ...labelStyle, marginBottom: 0 }}>{inputLabel}</label>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "var(--accent)",
-                fontSize: "var(--text-xs)",
-                fontFamily: "Rajdhani, sans-serif",
-                textTransform: "uppercase",
-                letterSpacing: "var(--tracking-wider)",
-                cursor: "pointer",
-                padding: "2px 8px",
-                borderRadius: "var(--radius-sm)",
-                transition: "background 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--accent-glow)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-              }}
-            >
-              [↑ Impor File]
-            </button>
-            <input
-              type="file"
-              accept=".txt"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleImportText}
-            />
           </div>
           <textarea
             value={inputText}
