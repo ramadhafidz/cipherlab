@@ -1,6 +1,7 @@
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
+import { Upload } from "./pages/Upload";
 
 /**
  * Header sticky dengan logo CipherLab dan navigasi.
@@ -73,9 +74,28 @@ function Header() {
               color: pathname === "/" ? "var(--text-accent)" : "var(--text-secondary)",
               borderBottom: pathname === "/" ? "1px solid var(--accent)" : "1px solid transparent",
               paddingBottom: "2px",
+              transition: "all 0.15s ease",
             }}
           >
             Playground
+          </Link>
+          <Link
+            to="/upload"
+            style={{
+              fontFamily: "Rajdhani, sans-serif",
+              fontWeight: 600,
+              fontSize: "var(--text-sm)",
+              letterSpacing: "var(--tracking-wide)",
+              textTransform: "uppercase",
+              textDecoration: "none",
+              color: pathname === "/upload" ? "var(--text-accent)" : "var(--text-secondary)",
+              borderBottom:
+                pathname === "/upload" ? "1px solid var(--accent)" : "1px solid transparent",
+              paddingBottom: "2px",
+              transition: "all 0.15s ease",
+            }}
+          >
+            Upload
           </Link>
           <Link
             to="/about"
@@ -90,6 +110,7 @@ function Header() {
               borderBottom:
                 pathname === "/about" ? "1px solid var(--accent)" : "1px solid transparent",
               paddingBottom: "2px",
+              transition: "all 0.15s ease",
             }}
           >
             About
@@ -110,6 +131,7 @@ function App() {
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/upload" element={<Upload />} />
           <Route path="/about" element={<About />} />
         </Routes>
       </main>

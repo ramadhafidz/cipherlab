@@ -74,6 +74,57 @@ export const CipherExamples: React.FC = () => {
     // set input
     setInputText(e.input);
   }
+
+  // Hanya tampilkan contoh jika cipher yang dipilih sama dengan contoh
+  const relevantExamples = EXAMPLES.filter((e) => e.cipherId === selectedCipher?.id);
+
+  if (relevantExamples.length === 0) return null;
+
+  return (
+    <div style={{ marginTop: "var(--space-4)" }}>
+      <p
+        style={{
+          fontFamily: "Rajdhani, sans-serif",
+          fontSize: "var(--text-xs)",
+          letterSpacing: "var(--tracking-wider)",
+          color: "var(--text-secondary)",
+          textTransform: "uppercase",
+          marginBottom: "var(--space-2)",
+        }}
+      >
+        Contoh Penggunaan:
+      </p>
+      <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
+        {relevantExamples.map((ex) => (
+          <button
+            key={ex.id}
+            onClick={() => loadExample(ex)}
+            style={{
+              padding: "var(--space-2) var(--space-4)",
+              background: "rgba(58, 213, 123, 0.1)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-sm)",
+              color: "var(--text-primary)",
+              fontFamily: "Rajdhani, sans-serif",
+              fontSize: "var(--text-sm)",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--accent-glow)";
+              e.currentTarget.style.borderColor = "var(--accent)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(58, 213, 123, 0.1)";
+              e.currentTarget.style.borderColor = "var(--border)";
+            }}
+          >
+            {ex.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default CipherExamples;

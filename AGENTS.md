@@ -251,7 +251,6 @@ export const caesarCipher: CipherDefinition = {
 - Autentikasi / login user
 - Menyimpan history enkripsi ke database
 - Cipher modern (AES, RSA, SHA, dll.)
-- File upload / enkripsi file
 
 ---
 
